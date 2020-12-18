@@ -39,7 +39,9 @@ void PhoneBook::add_contact(std::string name, std::string surname, NumTypes type
 
 void PhoneBook::print_to_console(std::string name , std::string surname) {
     auto contact = find(name,surname);
-    std::cout << contact->print();
+    if (contact != nullptr) {
+        std::cout << contact->print();
+    }
 }
 
 void PhoneBook::add_number(std::string name , std::string surname,NumTypes type, std::string number) {

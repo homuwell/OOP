@@ -1,28 +1,15 @@
 
 #include "../include/Square.h"
 
-void Square::fill(std::string points) {
-    std::stringstream ss(points);
-    std::unique_ptr<dot[]> tmp;
-    tmp = std::make_unique<dot[]>(2);
-    double coord;
-    for (auto i = 0; i < 2; ++i) {
-        ss >> coord;
-        tmp[i].first = coord;
-        ss >> coord;
-        tmp[i].second = coord;
-    }
-    if (std::abs(tmp[1].first - tmp[0].first ) != std::abs(tmp[1].second - tmp[0].second ) ) {
+Square::Square(dot first, dot second)
+{
+    if (std::abs(second.first - first.first ) != std::abs(second.second - first.second ) ) {
         throw std::invalid_argument("Can't create square, invalid points");
     } else {
-        points_ = std::make_unique<dot[]>(2);
-        points_ = std::move(tmp);
-        edge_len = std::abs(points_[1].first - points_[0].first );
+        points_[0] = first;;
+        points_[1] = second;
+        edge_len = points_[1].first - points_[0].first;
     }
-}
-
-Square::Square(std::string points) {
-    fill(points);
 }
 
 double Square::get_area() {
@@ -33,6 +20,27 @@ double Square::get_perimeter() {
     return 4.0 * edge_len;
 }
 
-Square::~Square() {
-    points_.reset();
+void Square::parse(pt::ptree *obj) {
+    pt::ptree square_info;
+    pt::ptree all_arr;
+    square_info.put("edge_len",edge_len);
+    parse_points(&square_info,points_);
+    obj->add_child("square",square_info);
+}
+
+void Square::unparse(pt::ptree *obj) {
+    this->edge_len = obj->get<double>("edge_len");
+    unparse_points(obj,this->points_);
+}
+
+const std::vector<double> Square::get_all_data() const
+{
+    std::vector<double> data;
+    for(auto i: points_) {
+        data.push_back(i.first);
+        data.push_back(i.second);
+    }
+    data.push_back(edge_len);
+    return data;
+
 }

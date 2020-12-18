@@ -1,16 +1,22 @@
 #include "../include/Triangle.h"
-void Triangle::fill(std::string points) {
-    std::stringstream ss(points);
-    double coord;
-    for (auto i =0; i < 3; ++i) {
-        ss >> coord;
-        points_[i].first = coord;
-        ss >> coord;
-        points_[i].second = coord;
+
+Triangle::Triangle(dot first,dot second, dot third)
+{
+    if(first == second || first == third || second == third) {
+        throw std::invalid_argument("Points can't be equal");
     }
-    FirstSecond = get_length(points_[0],points_[1]);
-    FirstThird = get_length(points_[0],points_[2]);
-    SecondThird = get_length(points_[1],points_[2]);
+    auto side1 = get_length(first,second);
+    auto side2 = get_length(first,third);
+    auto side3 = get_length(second,third);
+    if (side1 + side2 < side3 || side2 + side3 < side1 || side3+side1 < side2) {
+        throw std::invalid_argument("These points do not define a triangle");
+    }
+    points_[0] = first;
+    points_[1] = second;
+    points_[2] = third;
+    FirstSecond = side1;
+    FirstThird = side2;
+    SecondThird = side3;
 }
 
 double Triangle::get_area() {
@@ -18,10 +24,53 @@ double Triangle::get_area() {
     return std::sqrt(p * (p - FirstSecond) * (p - FirstThird) * (p - SecondThird));
 }
 
-Triangle::Triangle(std::string points) : points_(std::make_unique<dot[]>(3)) {
-    fill(points);
+double Triangle::get_first_second()
+{
+    return FirstSecond;
 }
+
+double Triangle::get_second_third()
+{
+    return SecondThird;
+}
+
+double Triangle::get_first_third()
+{
+    return FirstThird;
+}
+
+
 
 double Triangle::get_perimeter() {
     return FirstSecond + FirstThird + SecondThird;
+}
+
+void Triangle::parse(pt::ptree *obj) {
+    pt::ptree triangle_info;
+    triangle_info.put("FirstSecond",FirstSecond);
+    triangle_info.put("FirstThird",FirstThird);
+    triangle_info.put("SecondThird",SecondThird);
+    parse_points(&triangle_info,points_);
+    obj->add_child("triangle",triangle_info);
+
+}
+
+void Triangle::unparse(pt::ptree *obj) {
+    this->FirstSecond = obj->get<double>("FirstSecond");
+    this->FirstThird = obj->get<double>("FirstThird");
+    this->SecondThird = obj->get<double>("SecondThird");
+    unparse_points(obj,this->points_);
+}
+
+const std::vector<double> Triangle::get_all_data() const
+{
+    std::vector<double> data;
+    for(auto i: points_) {
+        data.push_back(i.first);
+        data.push_back(i.second);
+    }
+    data.push_back(FirstSecond);
+    data.push_back(FirstThird);
+    data.push_back(SecondThird);
+    return data;
 }

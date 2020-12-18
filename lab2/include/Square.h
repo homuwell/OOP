@@ -4,13 +4,15 @@
 
 class Square : public Figure {
     double edge_len;
-    std::unique_ptr<dot[]> points_;
-    void fill(std:: string points);
+    std::array<dot,2> points_;
 public:
-    Square(std::string points);
+    Square() = default;
+    Square(dot first, dot second);
     double get_area() override;
     double get_perimeter() override;
-    ~Square();
+    void parse(pt::ptree *obj) override;
+    void unparse(pt::ptree *obj) override;
+    const std::vector<double> get_all_data() const  override;
 };
 
 

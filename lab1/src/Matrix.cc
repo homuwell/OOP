@@ -1,4 +1,4 @@
-#include "../headers/Matrix.h"
+#include "../include/Matrix.h"
 
 template<class elements>
 Matrix<elements>::Matrix(size_t rows, size_t columns)
@@ -28,7 +28,7 @@ void Matrix<elements>::read_file() {
     std::cout << "Please, write path to file\n";
     std::cin >> path_to_file;
     std::ifstream file;
-    file.open(path_to_file);
+    file.open(path_to_file,std::ios::in);
     if (!file) {
         std::cout << "file do not exist";
     } else {

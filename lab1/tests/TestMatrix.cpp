@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "../headers/Matrix.h"
+#include "../include/Matrix.h"
 
 using testing::Eq;
 

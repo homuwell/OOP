@@ -1,0 +1,57 @@
+{
+    "triangle": {
+        "FirstSecond": "7.0710678118654755",
+        "FirstThird": "10",
+        "SecondThird": "7.0710678118654755",
+        "points_arr": [
+            [
+                "0",
+                "0"
+            ],
+            [
+                "5",
+                "5"
+            ],
+            [
+                "10",
+                "0"
+            ]
+        ]
+    },
+    "rectangle": {
+        "first_edge_len": "5",
+        "second_edge_len": "10",
+        "points_arr": [
+            [
+                "0",
+                "0"
+            ],
+            [
+                "5",
+                "10"
+            ]
+        ]
+    },
+    "square": {
+        "edge_len": "10",
+        "points_arr": [
+            [
+                "0",
+                "0"
+            ],
+            [
+                "10",
+                "10"
+            ]
+        ]
+    },
+    "circle": {
+        "radius": "10",
+        "points_arr": [
+            [
+                "0",
+                "0"
+            ]
+        ]
+    }
+}
