@@ -7,11 +7,8 @@ using testing::Eq;
 namespace {
     class testMatrix : public testing::Test {
     public:
-        Matrix<int> intMatrix{3,3, "1 2 3"
-                                   " 4 5 6"
-                                   " 7 8 9"};
-        Matrix<double> doubleMatrix{2,2, "1.5 2.5"
-                                        " 3.5 4.5"};
+        Matrix<int> intMatrix{3,3, {1, 2, 3, 4, 5, 6, 7, 8, 9}};
+        Matrix<double> doubleMatrix{2,2, {1.5, 2.5, 3.5, 4.5}};
         testMatrix() {
             intMatrix;
             doubleMatrix;
@@ -21,28 +18,29 @@ namespace {
 TEST_F(testMatrix, accessTest) {
     ASSERT_EQ(5, intMatrix[1][1]);
 }
-TEST_F(testMatrix, multiplicationTestWithDiffrentSizes) {
-    Matrix<int>second{3,3,"10 11 12"
-                                            " 13 14 15"
-                                            " 16 17 18"};
+TEST_F(testMatrix, multiplicationTwstWithDiffrentSize) {
+    Matrix<int>second{3,2,{10, 11, 12, 13, 14, 15}};
+    intMatrix.print_console();
+    std::cout << std::endl;
+    second.print_console();
     auto c = intMatrix * second;
-    Matrix<int>result{3,3,"84 90 96 "
-                                            "201 216 231 "
-                                            " 318 342 366"};
+    Matrix<int>result{3,2,{76, 82, 184, 199, 292, 316}};
+    ASSERT_EQ(c.to_string(), result.to_string());
+}
+TEST_F(testMatrix, multiplicationTestWithEqualSizes) {
+    Matrix<int>second{3,3,{10, 11, 12, 13, 14, 15, 16, 17, 18}};
+    auto c = intMatrix * second;
+    Matrix<int>result{3,3,{84, 90, 96, 201, 216, 231, 318, 342, 366}};
     ASSERT_EQ(c.to_string(), result.to_string());
 }
 TEST_F(testMatrix, multiplicationTestWithDoubleEqualSizes) {
-    Matrix<double>second{2,2, "5.5 6.5"
-                             " 7.5 8.5"};
+    Matrix<double>second{2,2, {5.5, 6.5, 7.5, 8.5}};
     auto c = doubleMatrix * second;
-    Matrix<double>result{2,2,"27 31"
-                             " 53 61"};
+    Matrix<double>result{2,2,{27, 31, 53, 61}};
     ASSERT_EQ(c.to_string(), result.to_string());
 }
 TEST_F(testMatrix, multiplicationTestInvalidArgument) {
-    Matrix<int>second{3,2,"10 11"
-                          " 12 13"
-                          " 14 15"};
+    Matrix<int>second{2,3,{10, 11, 12, 13, 14, 15}};
     try {
         auto c = intMatrix * second;
         FAIL();
@@ -61,20 +59,15 @@ TEST_F(testMatrix, accessTestInvalidArgument)  {
     }
 }
 TEST_F(testMatrix, subtractionTestInt) {
-    Matrix<int>second{3,3, "7 8 9"
-                              " 10 11 12"
-                              " 13 14 15"};
+    Matrix<int>second{3,3, {7, 8, 9, 10, 11, 12, 13, 14, 15}};
     auto c = second - intMatrix;
-    Matrix<int>result{3,3,"6 6 6"
-                             " 6 6 6"
-                             " 6 6 6"};
+    Matrix<int>result{3,3, {6, 6, 6, 6, 6, 6, 6, 6, 6}};
     ASSERT_EQ(c.to_string(), result.to_string());
 }
 
 TEST_F(testMatrix, subtractionTestInvalidArgument)  {
     try {
-        Matrix<int>second{2,2, "7 8"
-                               " 10 11"};
+        Matrix<int>second{2,2, {7, 8, 10, 11}};
         auto c = second - intMatrix;
         FAIL();
     }
@@ -83,28 +76,21 @@ TEST_F(testMatrix, subtractionTestInvalidArgument)  {
     }
 }
 TEST_F(testMatrix, subtractionTestDouble) {
-    Matrix<double>second{2,2, "7 8"
-                           " 9 10"};
+    Matrix<double>second{2,2, {7, 8, 9, 10}};
     auto c = second - doubleMatrix;
-    Matrix<double>result{2,2,"5.5 5.5"
-                             " 5.5 5.5"};
+    Matrix<double>result{2,2,{5.5, 5.5, 5.5, 5.5}};
     ASSERT_EQ(c.to_string(), result.to_string());
 }
 TEST_F(testMatrix, additionTestInt) {
-    Matrix<int>second{3,3, "7 8 9"
-                           " 10 11 12"
-                           " 13 14 15"};
+    Matrix<int>second{3,3, {7, 8, 9, 10, 11, 12, 13, 14, 15}};
     auto c = second + intMatrix;
-    Matrix<int>result{3,3,"8 10 12"
-                          " 14 16 18"
-                          " 20 22 24"};
+    Matrix<int>result{3,3,{8, 10, 12, 14, 16, 18, 20, 22, 24}};
     ASSERT_EQ(c.to_string(), result.to_string());
 }
 
 TEST_F(testMatrix, additionTestInvalidArgument)  {
     try {
-        Matrix<int>second{2,2, "7 8"
-                               " 10 11"};
+        Matrix<int>second{2,2, {7, 8, 10, 11}};
         auto c = second + intMatrix;
         FAIL();
     }
@@ -113,11 +99,9 @@ TEST_F(testMatrix, additionTestInvalidArgument)  {
     }
 }
 TEST_F(testMatrix, additionTestDouble) {
-    Matrix<double>second{2,2, "7 8"
-                              " 9 10"};
+    Matrix<double>second{2,2, {7, 8, 9, 10}};
     auto c = second + doubleMatrix;
-    Matrix<double>result{2,2,"8.5 10.5"
-                             " 12.5 14.5"};
+    Matrix<double>result{2,2,{8.5, 10.5, 12.5, 14.5}};
     ASSERT_EQ(c.to_string(), result.to_string());
 }
 TEST_F(testMatrix, determinantTestIntZero) {
@@ -129,8 +113,6 @@ TEST_F(testMatrix, determinantTestDouble) {
     ASSERT_EQ(doubleMatrix.get_determinant(), -2);
 }
 TEST_F(testMatrix, determinantTestInt) {
-    Matrix<int>second{3,3, "5 2 8"
-                           " 8 4 5"
-                           " 1 3 7"};
+    Matrix<int>second{3,3, {5, 2, 8, 8, 4, 5, 1, 3, 7}};
     ASSERT_EQ(second.get_determinant(), 123);
 }

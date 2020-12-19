@@ -7,50 +7,15 @@ Matrix<elements>::Matrix(size_t rows, size_t columns)
   data_(std::make_unique<std::unique_ptr<elements []>[] > (rows))
 {
     std::unique_ptr<elements []> colarr;
-    for(int i = 0; i < columns; ++i) {
-        colarr = std::make_unique<elements[]>(columns_);
+    for(int i = 0; i < rows; ++i) {
+        colarr = std::make_unique<elements[]>(columns);
         data_[i] = std::move(colarr);
     }
 }
 
-
-template <class elements>
-void Matrix<elements>::read_console() {
-    std::string matrixElements;
-    std::cout << "Please, write elements of the matrix:\n";
-    std::getline(std::cin,matrixElements);
-    fill(matrixElements);
-    print_console();
-}
-template <class elements>
-void Matrix<elements>::read_file() {
-    std::string path_to_file, matrix;
-    std::cout << "Please, write path to file\n";
-    std::cin >> path_to_file;
-    std::ifstream file;
-    file.open(path_to_file,std::ios::in);
-    if (!file) {
-        std::cout << "file do not exist";
-    } else {
-        file >> matrix;
-        fill(matrix);
-        print_console();
-    }
-}
 template <class elements>
 void Matrix<elements>::print_console() {
     std::cout << to_string();
-}
-template <class elements>
-void Matrix<elements>::fill(std::string matrix) {
-    elements elem;
-    std::stringstream ss(matrix);
-    for (int row = 0; row < rows_; ++row) {
-        for (int column = 0; column < columns_; ++column) {
-            ss >> elem;
-            data_[row][column] = elem;
-        }
-    }
 }
 
 template<class elements>
@@ -146,11 +111,10 @@ Matrix<elements> Matrix<elements>::operator-(const Matrix &other) {
 
 template<class elements>
 Matrix<elements> Matrix<elements>::operator*(const Matrix &other) {
-    if (this->rows_ != other.columns_) throw std::invalid_argument("Numbers of columns of first matrix doesn't equal to number of rows of second matrix");
+    if (this->columns_ != other.rows_) throw std::invalid_argument("Numbers of columns of first matrix doesn't equal to number of rows of second matrix");
     Matrix<elements>result(this->rows_,other.columns_);
-    #pragma omp parallel for
-    for(int i = 0; i < result.rows_; ++i) {
-        for (int j = 0; j  < result.columns_;++j) {
+    for(int i = 0; i < this->rows_; ++i) {
+        for (int j = 0; j  < other.columns_;++j) {
             for (int k = 0; k < this->columns_; ++k) {
                     result.data_[i][j] += this->data_[i][k] * other.data_[k][j];
             }
@@ -217,7 +181,7 @@ std::string Matrix<elements>::to_string() {
         }
         result << '\n';
     }
-    return result.str().erase(result.str().size() - 1,1);
+    return result.str();
 }
 
 template<class elements>
@@ -225,24 +189,6 @@ bool Matrix<elements>::operator!=(const Matrix &other) {
     return !(this == other);
 }
 
-template<class elements>
-void Matrix<elements>::read_string(std::string matrix) {
-    fill(std::move(matrix));
-}
-
-template<class elements>
-Matrix<elements>::Matrix(size_t rows, size_t columns, std::string elems)
-: rows_(rows),
-  columns_(columns),
-  data_(std::make_unique<std::unique_ptr<elements []>[] > (rows))
-  {
-    std::unique_ptr<elements []> colarr;
-    for(int i = 0; i < rows; ++i) {
-        colarr = std::make_unique<elements[]>(columns_);
-        data_[i] = std::move(colarr);
-    }
-    fill(std::move(elems));
-  }
 
 template<class elements>
 Matrix<elements>::~Matrix() {
@@ -252,6 +198,26 @@ Matrix<elements>::~Matrix() {
 template<class elements>
 elements Matrix<elements>::get_determinant() {
     return determinant(*this);
+}
+
+template<class elements>
+Matrix<elements>::Matrix(size_t rows, size_t columns, std::initializer_list<elements> elems) {
+    if (rows * columns != elems.size()) {
+        throw std::invalid_argument("Wrong number os elements");
+    }
+    rows_ = rows;
+    columns_ = columns;
+    int a = 0;
+    data_ = std::make_unique<std::unique_ptr<elements []>[] > (rows);
+    std::unique_ptr<elements []> collarr;
+    for(auto rw = 0; rw < rows; ++rw) {
+        collarr = std::make_unique<elements[]>(columns);
+        for(auto clm = 0; clm < columns;++clm) {
+            collarr[clm] = *(elems.begin() + a);
+            ++a;
+        }
+        data_[rw] = std::move(collarr);
+    }
 }
 
 
